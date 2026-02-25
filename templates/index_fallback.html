@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toi App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+        }
+        h1 { font-size: 3em; margin: 0 0 20px 0; }
+        p { font-size: 1.2em; margin: 10px 0; }
+        code {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Toi App</h1>
+        <p>Для работы приложения нужно собрать React:</p>
+        <p><code>cd templates && npm run build</code></p>
+        <p style="margin-top: 30px; font-size: 0.9em; opacity: 0.8;">
+            Если вы видите это сообщение, значит Django работает правильно! ✅
+        </p>
+    </div>
+</body>
+</html>
