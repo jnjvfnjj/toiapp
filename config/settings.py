@@ -13,8 +13,29 @@ def env_bool(name: str, default: bool = False) -> bool:
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-y1o&xq05i4w^wlb!svr6p(&zw(^jk04eb9(=rj6+k+50t$hi%#')
 DEBUG = env_bool('DEBUG', True)
-ALLOWED_HOSTS = [h.strip() for h in os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',') if h.strip()]
 
+# Hosts / CSRF origins
+_allowed_hosts_env = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost")
+ALLOWED_HOSTS = [h.strip() for h in _allowed_hosts_env.split(",") if h.strip()]
+
+# Vercel provides the deployment domain via VERCEL_URL (without scheme).
+_vercel_url = os.getenv("VERCEL_URL")
+if _vercel_url:
+    _vercel_host = _vercel_url.strip().replace("https://", "").replace("http://", "").split("/")[0]
+    if _vercel_host and _vercel_host not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(_vercel_host)
+
+# Ensure Vercel subdomains are allowed even if ALLOWED_HOSTS is set in env.
+if ".vercel.app" not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(".vercel.app")
+
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",") if o.strip()]
+if _vercel_url:
+    origin = f"https://{_vercel_host}"
+    if origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(origin)
+if "https://*.vercel.app" not in CSRF_TRUSTED_ORIGINS:
+    CSRF_TRUSTED_ORIGINS.append("https://*.vercel.app")
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
