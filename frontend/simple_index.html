@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toi App</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+        }
+        .container {
+            text-align: center;
+            padding: 50px 40px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            max-width: 700px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        h1 { 
+            margin: 0 0 20px 0;
+            font-size: 2.5em;
+        }
+        p {
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+        code {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            display: inline-block;
+            margin: 2px;
+        }
+        .steps {
+            text-align: left;
+            margin: 30px 0;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 25px;
+            border-radius: 10px;
+        }
+        .steps ol {
+            line-height: 2.5;
+            padding-left: 25px;
+        }
+        .steps li {
+            margin: 10px 0;
+        }
+        .api-link {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .api-link a {
+            color: #ffd700;
+            text-decoration: none;
+            font-size: 1.1em;
+        }
+        .api-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Toi App</h1>
+        <p><strong>React приложение не собрано.</strong></p>
+        <p>Выполните следующие шаги для сборки:</p>
+        
+        <div class="steps">
+            <ol>
+                <li>Откройте терминал в папке проекта</li>
+                <li>Перейдите в папку frontend: <code>cd frontend</code></li>
+                <li>Установите зависимости: <code>npm install</code></li>
+                <li>Соберите приложение: <code>npm run build</code></li>
+                <li>Обновите эту страницу</li>
+            </ol>
+        </div>
+        
+        <p><strong>Или запустите dev сервер для разработки:</strong></p>
+        <p><code>cd frontend</code></p>
+        <p><code>npm install</code></p>
+        <p><code>npm run dev</code></p>
+        <p style="font-size: 0.9em; opacity: 0.9;">Приложение будет доступно на http://localhost:3000</p>
+        
+        <div class="api-link">
+            <p>✅ API работает! Проверьте: <a href="/api/test/" target="_blank">/api/test/</a></p>
+        </div>
+    </div>
+</body>
+</html>

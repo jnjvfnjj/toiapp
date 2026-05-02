@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Toi App - Frontend not built</title>
+    <style>
+      body { font-family: Arial, sans-serif; color: #333; padding: 40px; background: #f8f9fa; }
+      .container { max-width: 700px; margin: auto; background: #fff; border-radius: 12px; padding: 30px; box-shadow: 0 12px 32px rgba(0,0,0,.08); }
+      h1 { margin-top: 0; }
+      code { background: #f1f1f1; padding: 4px 8px; border-radius: 4px; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Frontend build missing</h1>
+      <p>The React frontend build was not found.</p>
+      <p>To build the frontend, run:</p>
+      <pre><code>cd frontend && npm install && npm run build</code></pre>
+      <p>Then restart the Django backend:</p>
+      <pre><code>cd backend && python manage.py runserver</code></pre>
+    </div>
+  </body>
+</html>
