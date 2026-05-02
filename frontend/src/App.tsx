@@ -1,7 +1,7 @@
 ﻿// App.tsx
 import React, { useState, useEffect } from 'react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sun, ArrowLeft } from 'lucide-react';
 import { Toaster } from './components/ui/sonner';
 import { GOOGLE_CLIENT_ID } from './config/googleConfig';
 
@@ -24,6 +24,14 @@ import { BudgetScreen } from './components/BudgetScreen';
 import { ProfileScreen } from './components/ProfileScreen';
 import { MyVenuesScreen } from './components/MyVenuesScreen';
 import { OwnerBookingsScreen } from './components/OwnerBookingsScreen';
+
+// НОВЫЕ ИМПОРТЫ - ваши компоненты
+import { CreateEventWizard } from './components/CreateEventWizard';
+import { MyEventsScreen } from './components/MyEventsScreen';
+import { ChatScreen } from './components/ChatScreen';
+import { SettingsScreen } from './components/SettingsScreen';
+import { SupportScreen } from './components/SupportScreen';
+import { LanguageSelector } from './components/LanguageSelector';
 
 // Types
 interface BudgetItem {
@@ -56,12 +64,44 @@ interface Venue {
   description?: string;
 }
 
+interface ChatMessage {
+  id: string;
+  text: string;
+  senderId: string;
+  senderName: string;
+  timestamp: string;
+  photoUrl?: string;
+}
+
+interface User {
+  id: string;
+  name: string;
+  surname?: string;
+  email: string;
+  phone?: string;
+  photoUrl?: string;
+  role: 'organizer' | 'owner';
+}
+
+interface Event {
+  id: string;
+  name: string;
+  date: string;
+  time: string;
+  guests: number;
+  budget: number;
+  type: string;
+  venue?: Venue;
+}
+
 function AppContent() {
   const mainRef = React.useRef<HTMLDivElement>(null);
   const [currentScreen, setCurrentScreen] = useState('roleSelection');
   const [isDark, setIsDark] = useState(false);
   const [userRole, setUserRole] = useState<'organizer' | 'owner' | null>(null);
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [language, setLanguage] = useState<'ru' | 'kg' | 'en'>('ru');
   
   // State для BudgetScreen
@@ -74,8 +114,15 @@ function AppContent() {
   // State для OwnerBookingsScreen
   const [bookings, setBookings] = useState<Booking[]>([]);
   
+  // State для событий
+  const [events, setEvents] = useState<Event[]>([]);
+  
+  // State для чата
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  
   // State для пользователя
-  const [user, setUser] = useState<any>({
+  const [user, setUser] = useState<User>({
+    id: '1',
     name: 'Адилет',
     surname: 'Асанбеков',
     email: 'adilet@example.com',
@@ -150,7 +197,9 @@ function AppContent() {
   };
 
   const handleOpenChat = (bookingId: string) => {
-    console.log('Open chat for booking:', bookingId);
+    const booking = bookings.find(b => b.id === bookingId);
+    setSelectedBooking(booking || null);
+    navigateTo('chat');
   };
 
   const handleLogout = () => {
@@ -159,6 +208,38 @@ function AppContent() {
     setUserRole(null);
     setUser(null);
     navigateTo('roleSelection');
+  };
+
+  const handleCreateEvent = (event: Event) => {
+    setEvents([...events, event]);
+    navigateTo('myEvents');
+  };
+
+  const handleSelectEvent = (event: Event) => {
+    setSelectedEvent(event);
+    navigateTo('eventDetail');
+  };
+
+  const handleUpdateUser = (userData: Partial<User>) => {
+    setUser({ ...user, ...userData });
+    // Также обновляем в localStorage
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const parsed = JSON.parse(storedUser);
+      localStorage.setItem('user', JSON.stringify({ ...parsed, ...userData }));
+    }
+  };
+
+  const handleSendMessage = (text: string, photoUrl?: string) => {
+    const newMessage: ChatMessage = {
+      id: Date.now().toString(),
+      text,
+      senderId: user.id,
+      senderName: user.name,
+      timestamp: new Date().toISOString(),
+      photoUrl,
+    };
+    setChatMessages([...chatMessages, newMessage]);
   };
 
   const renderScreen = () => {
@@ -194,7 +275,7 @@ function AppContent() {
         return <OnboardingScreen step={2} onNext={() => navigateTo('home')} onStart={() => navigateTo('home')} />;
       
       case 'home':
-        return <HomeScreen onCreateEvent={() => navigateTo('createEvent')} onMyEvents={() => navigateTo('myEvents')} onFindVenue={() => navigateTo('venueList')} onNavigate={navigateTo} events={[]} user={user} />;
+        return <HomeScreen onCreateEvent={() => navigateTo('createEvent')} onMyEvents={() => navigateTo('myEvents')} onFindVenue={() => navigateTo('venueList')} onNavigate={navigateTo} events={events} user={user} />;
       
       case 'venueList':
         return <VenueList onSelectVenue={handleSelectVenue} onBack={() => navigateTo('home')} />;
@@ -225,20 +306,50 @@ function AppContent() {
       case 'ownerProfile':
         return <ProfileScreen user={user} language={language} onBack={() => navigateTo('home')} onLogout={handleLogout} onNavigateToSettings={() => navigateTo('settings')} onNavigateToLanguage={() => navigateTo('language')} onNavigateToSupport={() => navigateTo('support')} />;
       
+      // НОВЫЕ РАБОЧИЕ ЭКРАНЫ
       case 'createEvent':
-        return <div className="p-4 pb-24"><h1 className="text-2xl font-bold">Создание события</h1><button onClick={() => navigateTo('home')} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded">Назад</button></div>;
+        return <CreateEventWizard onComplete={handleCreateEvent} onBack={() => navigateTo('home')} />;
       
       case 'myEvents':
-        return <div className="p-4 pb-24"><h1 className="text-2xl font-bold">Мои события</h1><button onClick={() => navigateTo('home')} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded">Назад</button></div>;
+        return <MyEventsScreen events={events} onSelectEvent={handleSelectEvent} onCreateEvent={() => navigateTo('createEvent')} onBack={() => navigateTo('home')} />;
+      
+      case 'eventDetail':
+        return (
+          <div className="p-4 pb-24">
+            <button onClick={() => navigateTo('myEvents')} className="mb-4 p-2 hover:bg-gray-100 rounded-full">
+              <ArrowLeft className="w-6 h-6" />
+            </button>
+            <h1 className="text-2xl font-bold mb-4">{selectedEvent?.name || 'Детали события'}</h1>
+            <pre className="bg-gray-100 p-4 rounded-lg">{JSON.stringify(selectedEvent, null, 2)}</pre>
+          </div>
+        );
+      
+      case 'chat':
+        return selectedBooking ? (
+          <ChatScreen 
+            booking={selectedBooking} 
+            messages={chatMessages} 
+            currentUser={user} 
+            onSendMessage={handleSendMessage} 
+            onBack={() => navigateTo('ownerBookings')} 
+          />
+        ) : (
+          <div className="p-4 pb-24">
+            <button onClick={() => navigateTo('ownerBookings')} className="mb-4 p-2 hover:bg-gray-100 rounded-full">
+              <ArrowLeft className="w-6 h-6" />
+            </button>
+            <h1 className="text-2xl font-bold mb-4">Чат не выбран</h1>
+          </div>
+        );
       
       case 'settings':
-        return <div className="p-4 pb-24"><h1 className="text-2xl font-bold">Настройки</h1><button onClick={() => navigateTo('profile')} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded">Назад</button></div>;
+        return <SettingsScreen user={user} language={language} onBack={() => navigateTo('profile')} onUpdateUser={handleUpdateUser} />;
       
       case 'language':
-        return <div className="p-4 pb-24"><h1 className="text-2xl font-bold">Выбор языка</h1><button onClick={() => navigateTo('profile')} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded">Назад</button></div>;
+        return <LanguageSelector currentLanguage={language} onBack={() => navigateTo('profile')} onSelectLanguage={setLanguage} />;
       
       case 'support':
-        return <div className="p-4 pb-24"><h1 className="text-2xl font-bold">Поддержка</h1><button onClick={() => navigateTo('profile')} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded">Назад</button></div>;
+        return <SupportScreen language={language} onBack={() => navigateTo('profile')} />;
       
       case 'addVenue':
         return <div className="p-4 pb-24"><h1 className="text-2xl font-bold">Добавление площадки</h1><button onClick={() => navigateTo('myVenues')} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded">Назад</button></div>;
@@ -275,9 +386,6 @@ function AppContent() {
     </div>
   );
 }
-
-// Импортируем ArrowLeft для venueDetail
-import { ArrowLeft } from 'lucide-react';
 
 export default function App() {
   return (
