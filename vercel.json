@@ -1,35 +1,10 @@
 {
-  "functions": {
-    "backend/toiapp/**/*.py": {
-      "runtime": "python3.11"
-    }
-  },
-  "builds": [
-    {
-      "src": "frontend/**",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "frontend/dist",
-        "buildCommand": "cd frontend && npm install && npm run build"
-      }
-    },
-    {
-      "src": "backend/toiapp/wsgi.py",
-      "use": "@vercel/python"
-    }
-  ],
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "outputDirectory": "frontend/dist",
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "backend/toiapp/wsgi.py"
-    },
-    {
       "src": "/(.*)",
-      "dest": "/frontend/dist/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/frontend/dist/index.html"
+      "dest": "/index.html"
     }
   ]
 }
